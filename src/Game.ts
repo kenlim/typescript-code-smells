@@ -1,3 +1,6 @@
+import { timeLog } from "console";
+import { isUndefined } from "util";
+
 export class Game {
 
     /* SMELL: TEMPORARY FIELD */
@@ -18,7 +21,7 @@ export class Game {
             throw new Error("Invalid next player");
         }
         //if not first move but play on an already played tile
-        else if (this._board.TileAt(x, y).Symbol != ' ') {
+        else if (this._board.SymbolAt(x, y) != ' ') {
             throw new Error("Invalid position");
         }
 
@@ -52,14 +55,15 @@ export class Game {
 
     /* SMELL: FEATURE ENVY, MESSAGE CHAIN */
     WinnerOnRow(row: number): string {
-        if (this._board.TileAt(row, 0)!.Symbol != ' ' &&
-            this._board.TileAt(row, 0)!.Symbol == this._board.TileAt(row, 1)!.Symbol &&
-            this._board.TileAt(row, 2)!.Symbol == this._board.TileAt(row, 1)!.Symbol) {
-            return this._board.TileAt(row, 0)!.Symbol;
+        if (this._board.SymbolAt(row, 0) != ' ' &&
+            this._board.SymbolAt(row, 0) == this._board.SymbolAt(row, 1) &&
+            this._board.SymbolAt(row, 2) == this._board.SymbolAt(row, 1)) {
+            return this._board.SymbolAt(row, 0);
         }
 
         return ' ';
     }
+    
 }
 
 interface Tile
@@ -72,7 +76,8 @@ interface Tile
 
 class Board
 {
-    private _plays : Tile[] = [];
+
+    private _tiles : Tile[] = [];
 
     constructor()
     {
@@ -81,13 +86,18 @@ class Board
             for (let j = 0; j < 3; j++)
             {
                 const tile : Tile = {X :i, Y:j, Symbol:" "};
-                this._plays.push(tile);
+                this._tiles.push(tile);
             }
         }
     }
 
-    public TileAt(x:  number, y: number): Tile {
-        return this._plays.find((t:Tile) => t.X == x && t.Y == y)!
+
+    public SymbolAt(x:  number, y: number): string {
+        const tile = this._tiles.find((t:Tile) => t.X == x && t.Y == y)
+        if (tile !== undefined) {
+            return tile.Symbol
+        } 
+        return " "
     }
 
     /* SMELL: LONG PARAMETER LIST */
@@ -95,6 +105,6 @@ class Board
     {
         const tile : Tile = {X :x, Y:y, Symbol:symbol};
 
-        this._plays.find((t:Tile) => t.X == x && t.Y == y)!.Symbol = symbol;
+        this._tiles.find((t:Tile) => t.X == x && t.Y == y)!.Symbol = symbol;
     }
 }
