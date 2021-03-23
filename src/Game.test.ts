@@ -102,4 +102,16 @@ describe('TicTacToe game', () => {
         
         expect(winner).toBe("O");
     });
+
+    it('should declare player X as winner if it plays three in left column', () => {
+        game.play('X', 0, 0);
+        game.play('O', 1, 1);
+        game.play('X', 1, 0);
+        game.play('O', 2, 1);
+        game.play('X', 2, 0);
+        
+        var winner = game.winner();
+        
+        expect(winner).toBe("X");
+    });
 });

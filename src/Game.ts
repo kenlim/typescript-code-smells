@@ -16,15 +16,15 @@ export class Game {
         this.makeMove(symbol, x, y);
     }
 
-    canPlayNext(symbol: string): boolean {
+    private canPlayNext(symbol: string): boolean {
         return symbol !== this._lastSymbol;
     }
 
-    isTileTaken(x: number, y: number): boolean {
+    private isTileTaken(x: number, y: number): boolean {
          return this._board.symbolAt(x, y) != ' ';
     }
 
-    makeMove(symbol: string, x: number, y: number): void {
+    private makeMove(symbol: string, x: number, y: number): void {
         this._lastSymbol = symbol;
         this._board.addTileAt(symbol, x, y);
     }
@@ -32,24 +32,13 @@ export class Game {
     /* SMELL: DUPLICATED CODE */
     public winner() : string {
         
-        let winner = ' ';
-
-        winner = this.winnerOnRow(0);
-        if (winner != ' ') {
-            return winner;
+        for (let x of [0, 1, 2]) {
+            const winner = this.winnerOnRow(x);
+            if (winner != ' ') {
+                return winner;
+            }
         }
-
-        winner = this.winnerOnRow(1);
-        if (winner != ' ') {
-            return winner;
-        }
-
-        winner = this.winnerOnRow(2);
-        if (winner != ' ') {
-            return winner;
-        }
-
-        return winner;
+        return " ";
     }
 
     /* SMELL: FEATURE ENVY */
