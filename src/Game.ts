@@ -1,51 +1,50 @@
-import { timeLog } from "console";
-import { isUndefined } from "util";
-
 export class Game {
 
-    /* SMELL: TEMPORARY FIELD */
-    private _lastSymbol: string = ' ';
+    private _lastSymbol: string = 'O';
     private _board: Board = new Board();
 
-    /* SMELL: SWITCH, LONG PARAMETER LIST, COMMENTS  */
-    public Play(symbol: string, x: number, y: number) : void {
-        //if first move
-        if (this._lastSymbol == ' ') {
-            //if player is X
-            if (symbol == 'O') {
-                throw new Error("Invalid first player");
-            }
-        }
-        //if not first move but player repeated
-        else if (symbol == this._lastSymbol) {
+    /* SMELL: LONG PARAMETER LIST  */
+    public play(symbol: string, x: number, y: number) : void {
+        if (this.canPlayNext(symbol) === false) {
             throw new Error("Invalid next player");
         }
-        //if not first move but play on an already played tile
-        else if (this._board.SymbolAt(x, y) != ' ') {
+
+        if (this.isTileTaken(x, y)) {
             throw new Error("Invalid position");
         }
 
-        // update game state
-        this._lastSymbol = symbol;
-        this._board.AddTileAt(symbol, x, y);
+        this.makeMove(symbol, x, y);
     }
 
-    /* SMELL: DUPLICATED CODE, LONG METHOD, FEATURE ENVY, MESSAGE CHAIN, COMMENTS */
-    public Winner() : string {
+    canPlayNext(symbol: string): boolean {
+        return symbol !== this._lastSymbol;
+    }
+
+    isTileTaken(x: number, y: number): boolean {
+         return this._board.symbolAt(x, y) != ' ';
+    }
+
+    makeMove(symbol: string, x: number, y: number): void {
+        this._lastSymbol = symbol;
+        this._board.addTileAt(symbol, x, y);
+    }
+
+    /* SMELL: DUPLICATED CODE */
+    public winner() : string {
         
         let winner = ' ';
 
-        winner = this.WinnerOnRow(0);
+        winner = this.winnerOnRow(0);
         if (winner != ' ') {
             return winner;
         }
 
-        winner = this.WinnerOnRow(1);
+        winner = this.winnerOnRow(1);
         if (winner != ' ') {
             return winner;
         }
 
-        winner = this.WinnerOnRow(2);
+        winner = this.winnerOnRow(2);
         if (winner != ' ') {
             return winner;
         }
@@ -53,12 +52,12 @@ export class Game {
         return winner;
     }
 
-    /* SMELL: FEATURE ENVY, MESSAGE CHAIN */
-    WinnerOnRow(row: number): string {
-        if (this._board.SymbolAt(row, 0) != ' ' &&
-            this._board.SymbolAt(row, 0) == this._board.SymbolAt(row, 1) &&
-            this._board.SymbolAt(row, 2) == this._board.SymbolAt(row, 1)) {
-            return this._board.SymbolAt(row, 0);
+    /* SMELL: FEATURE ENVY */
+    winnerOnRow(row: number): string {
+        if (this._board.symbolAt(row, 0) != ' ' &&
+            this._board.symbolAt(row, 0) == this._board.symbolAt(row, 1) &&
+            this._board.symbolAt(row, 2) == this._board.symbolAt(row, 1)) {
+            return this._board.symbolAt(row, 0);
         }
 
         return ' ';
@@ -92,7 +91,7 @@ class Board
     }
 
 
-    public SymbolAt(x:  number, y: number): string {
+    public symbolAt(x:  number, y: number): string {
         const tile = this._tiles.find((t:Tile) => t.X == x && t.Y == y)
         if (tile !== undefined) {
             return tile.Symbol
@@ -101,7 +100,7 @@ class Board
     }
 
     /* SMELL: LONG PARAMETER LIST */
-    public AddTileAt(symbol: string, x: number, y: number) : void
+    public addTileAt(symbol: string, x: number, y: number) : void
     {
         const tile : Tile = {X :x, Y:y, Symbol:symbol};
 
